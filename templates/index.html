@@ -1,0 +1,705 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Health Care Center - Medical AI Hub</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+    <!-- Custom Glassmorphism Stylesheet -->
+    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+    <!-- Theme Detection Block Script -->
+    <script>
+        (function() {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            if (savedTheme === 'light') {
+                document.documentElement.classList.add('light-theme');
+            }
+        })();
+    </script>
+</head>
+<body>
+    <!-- Transparent Glassmorphism Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark glass-navbar sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <div class="logo d-inline-block align-top">
+                    <img src="{{ url_for('static', filename='IMG.PNG') }}" width="40" height="40" class="rounded-circle" alt="Health Care Logo">
+                </div>
+                <span>Health AI Hub</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-center">
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.path == '/' or request.path == '/predict' or request.path == '/predict_chat' or not request.path %}active{% endif %}" href="/">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.path == '/about' %}active{% endif %}" href="/about">About</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.path == '/contact' %}active{% endif %}" href="/contact">Contact</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.path == '/developer' %}active{% endif %}" href="/developer">Developer</a>
+                    </li>
+                    <!-- Theme Toggle Button -->
+                    <li class="nav-item ms-lg-3 mt-2 mt-lg-0">
+                        <button id="themeToggle" class="btn btn-sm rounded-circle border-0 p-0" style="font-size: 1.25rem; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.08); color: var(--text-primary); transition: all 0.2s ease;" title="Toggle Theme">
+                            🌙
+                        </button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <div class="container my-5">
+        <!-- Clinic Header -->
+        <div class="text-center mb-5 animate-slide-up">
+            <h1 class="clinic-title display-4">Personalized Medical AI</h1>
+            <p class="clinic-subtitle">Describe your symptoms in plain English to get an instant diagnosis and personalized wellness recommendations from our clinical models.</p>
+        </div>
+
+        <!-- Symptom Input Form -->
+        <div class="glass-card mb-5 animate-slide-up" style="max-width: 800px; margin: 0 auto;">
+            <form action="/predict" method="post">
+                <div class="mb-4">
+                    <label for="symptoms" class="form-label fw-bold text-uppercase tracking-wider" style="color: var(--accent-cyan); font-size: 0.85rem;">Describe Your Symptoms</label>
+                    <input type="text" class="form-control form-control-custom" id="symptoms" name="symptoms" placeholder="e.g. itching, skin rash, continuous sneezing, stomach pain...">
+                    <div class="form-text text-muted mt-2">Type your symptoms in detail. Separate them with spaces or commas.</div>
+                </div>
+
+                {% if message %}
+                <div class="alert alert-danger bg-opacity-10 text-danger border-danger-subtle rounded-3 mb-4" role="alert">
+                    {{ message }}
+                </div>
+                {% endif %}
+
+                <button type="submit" class="btn btn-premium-primary w-100 py-3 mt-2">Run Clinical Diagnostic Models</button>
+            </form>
+        </div>
+
+        {% if predicted_disease %}
+
+        <!-- AI Diagnostics Dashboard -->
+        <div id="dashboardSection" class="animate-slide-up mb-5">
+            <h2 class="text-center dashboard-title">AI Diagnostics Dashboard</h2>
+            
+            <div class="dashboard-grid">
+                
+                <!-- Card 1: Overview -->
+                <div class="dash-card">
+                    <div class="dash-card-header">
+                        <div class="dash-card-icon icon-overview">📋</div>
+                        <h5 class="dash-card-title">Diagnosis Overview</h5>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <span class="disease-badge">{{ predicted_disease }}</span>
+                    </div>
+                    
+                    {% if confidence %}
+                    <div class="confidence-indicator">
+                        <span>★ Primary confidence:</span>
+                        <strong style="color: var(--accent-emerald);">{{ confidence }}%</strong>
+                    </div>
+                    {% endif %}
+                    
+                    <p class="disease-description">{{ dis_des }}</p>
+                </div>
+
+                <!-- Card 2: AI Model Comparison -->
+                <div class="dash-card">
+                    <div class="dash-card-header">
+                        <div class="dash-card-icon icon-comparison">⚡</div>
+                        <h5 class="dash-card-title">Comparative AI Analysis</h5>
+                    </div>
+                    
+                    {% if top3_lstm or tfidf_top3 %}
+                    <div class="row">
+                        <!-- BiLSTM Column -->
+                        <div class="col-md-6 mb-4 mb-md-0">
+                            <h6 class="text-uppercase text-xs tracking-wider mb-3 fw-bold" style="color: var(--accent-cyan); font-size: 0.8rem;">BiLSTM Deep Learning</h6>
+                            {% if top3_lstm %}
+                                {% for disease, conf in top3_lstm %}
+                                <div class="progress-container-custom">
+                                    <div class="progress-label-custom">
+                                        <span class="text-truncate" style="max-width: 110px;">{{ disease }}</span>
+                                        <span>{{ conf }}%</span>
+                                    </div>
+                                    <div class="progress-bar-custom">
+                                        <div class="progress-fill-custom bg-lstm" style="width: {{ conf }}%;"></div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            {% else %}
+                                <p class="text-muted small">Not available</p>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- TF-IDF SVM Column -->
+                        <div class="col-md-6">
+                            <h6 class="text-uppercase text-xs tracking-wider mb-3 fw-bold" style="color: var(--accent-orange); font-size: 0.8rem;">TF-IDF + SVM</h6>
+                            {% if tfidf_top3 %}
+                                {% for disease, conf in tfidf_top3 %}
+                                <div class="progress-container-custom">
+                                    <div class="progress-label-custom">
+                                        <span class="text-truncate" style="max-width: 110px;">{{ disease }}</span>
+                                        <span>{{ conf }}%</span>
+                                    </div>
+                                    <div class="progress-bar-custom">
+                                        <div class="progress-fill-custom bg-tfidf" style="width: {{ conf }}%;"></div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            {% else %}
+                                <p class="text-muted small">Not available</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% else %}
+                    <p class="text-muted">No comparative analysis data available for chat-based diagnoses.</p>
+                    {% endif %}
+                </div>
+
+                <!-- Card 3: Treatment Plan -->
+                <div class="dash-card">
+                    <div class="dash-card-header">
+                        <div class="dash-card-icon icon-treatment">⚕</div>
+                        <h5 class="dash-card-title">Treatment & Care Plan</h5>
+                    </div>
+                    
+                    <div class="row">
+                        <!-- Medications -->
+                        <div class="col-md-6 mb-4 mb-md-0">
+                            <div class="treatment-section-title medication">
+                                <span>✚ Suggested Medications</span>
+                            </div>
+                            {% if medications %}
+                            <ul class="treatment-list">
+                                {% for item in medications %}
+                                    {% if item %}
+                                    <li class="treatment-item">
+                                        <span class="treatment-bullet medication">•</span>
+                                        <span>{{ item }}</span>
+                                    </li>
+                                    {% endif %}
+                                {% endfor %}
+                            </ul>
+                            {% else %}
+                            <p class="text-muted small">No specific medication data.</p>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Precautions -->
+                        <div class="col-md-6">
+                            <div class="treatment-section-title precaution">
+                                <span>✔ Required Precautions</span>
+                            </div>
+                            {% if my_precautions %}
+                            <ul class="treatment-list">
+                                {% for item in my_precautions %}
+                                    {% if item %}
+                                    <li class="treatment-item">
+                                        <span class="treatment-bullet precaution">•</span>
+                                        <span>{{ item }}</span>
+                                    </li>
+                                    {% endif %}
+                                {% endfor %}
+                            </ul>
+                            {% else %}
+                            <p class="text-muted small">No specific precautions listed.</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="doctor-disclaimer">
+                        <span>⚠</span>
+                        <span><strong>Important Disclaimer:</strong> These lists are generated by AI. Do not ingest medications or start treatments without consulting a qualified healthcare professional.</span>
+                    </div>
+                </div>
+
+                <!-- Card 4: Lifestyle Advice -->
+                <div class="dash-card">
+                    <div class="dash-card-header">
+                        <div class="dash-card-icon icon-lifestyle">🍎</div>
+                        <h5 class="dash-card-title">Lifestyle & Wellness Advice</h5>
+                    </div>
+                    
+                    <div class="row">
+                        <!-- Diets -->
+                        <div class="col-md-6 mb-4 mb-md-0">
+                            <div class="treatment-section-title diet">
+                                <span>🥗 Recommended Diet Plan</span>
+                            </div>
+                            {% if my_diet %}
+                            <ul class="treatment-list">
+                                {% for item in my_diet %}
+                                    {% if item %}
+                                    <li class="treatment-item">
+                                        <span class="treatment-bullet diet">•</span>
+                                        <span>{{ item }}</span>
+                                    </li>
+                                    {% endif %}
+                                {% endfor %}
+                            </ul>
+                            {% else %}
+                            <p class="text-muted small">No specific dietary advice.</p>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Workouts -->
+                        <div class="col-md-6">
+                            <div class="treatment-section-title workout">
+                                <span>🏋 Recommended Exercises</span>
+                            </div>
+                            {% if workout is not none and workout|length > 0 %}
+                            <ul class="treatment-list">
+                                {% for item in workout %}
+                                    {% if item %}
+                                    <li class="treatment-item">
+                                        <span class="treatment-bullet workout">•</span>
+                                        <span>{{ item }}</span>
+                                    </li>
+                                    {% endif %}
+                                {% endfor %}
+                            </ul>
+                            {% else %}
+                            <p class="text-muted small">No specific workout recommendations.</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chatbot Follow-up Widget -->
+        <div class="container my-5" id="chatbotWrapper" style="display:none;">
+            <div class="chat-container">
+                <div class="chat-header">
+                    <div class="chat-avatar">AI</div>
+                    <div class="chat-title-group">
+                        <h4>Diagnostics Follow-Up Assistant</h4>
+                        <p>Answer the following clinical questions to refine your diagnostic accuracy.</p>
+                    </div>
+                </div>
+                
+                <div id="chatBox" class="chat-box-area"></div>
+                
+                <div>
+                    <div class="chat-progress-label">
+                        <span>Confidence Certainty</span>
+                        <span id="confLabel" class="fw-bold" style="color: var(--accent-cyan);">0%</span>
+                    </div>
+                    <div class="chat-progress-wrapper">
+                        <div id="confBar" class="chat-progress-fill" style="width: 0%; background: var(--accent-cyan);"></div>
+                    </div>
+                </div>
+                
+                <div id="answerArea" class="chat-btn-area">
+                    <button onclick="answer(true)" class="chat-btn-yes">Yes</button>
+                    <button onclick="answer(false)" class="chat-btn-no">No</button>
+                    <button onclick="resetChat()" class="chat-btn-reset">Reset Assistant</button>
+                </div>
+                
+                <div id="resultArea" class="chat-result-panel" style="display:none;">
+                    <h5 class="fw-bold mb-2" style="color: var(--accent-emerald);">AI Diagnostic Refinement</h5>
+                    <p id="resultText" style="color: var(--text-primary); font-size: 1rem; line-height: 1.5; margin-bottom: 1rem;"></p>
+                    <button onclick="useResultForDetails()" class="btn btn-premium-primary w-100 py-3">
+                        Compile Full Details (Medications, Workouts, Diets...)
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            // Preserved Chatbot Logic Variables
+            const DISEASE_SYMPTOMS = {"Fungal infection": ["itching", "skin_rash", "nodal_skin_eruptions", "dischromic _patches"], "Allergy": ["continuous_sneezing", "shivering", "chills", "watering_from_eyes"], "GERD": ["stomach_pain", "acidity", "ulcers_on_tongue", "vomiting", "cough", "chest_pain"], "Chronic cholestasis": ["itching", "vomiting", "yellowish_skin", "nausea", "loss_of_appetite", "abdominal_pain", "yellowing_of_eyes"], "Drug Reaction": ["itching", "skin_rash", "stomach_pain", "burning_micturition", "spotting_ urination"], "Peptic ulcer diseae": ["vomiting", "indigestion", "loss_of_appetite", "abdominal_pain", "passage_of_gases", "internal_itching"], "AIDS": ["muscle_wasting", "patches_in_throat", "high_fever", "extra_marital_contacts"], "Diabetes ": ["fatigue", "weight_loss", "restlessness", "lethargy", "irregular_sugar_level", "blurred_and_distorted_vision", "obesity", "excessive_hunger", "increased_appetite", "polyuria"], "Gastroenteritis": ["vomiting", "sunken_eyes", "dehydration", "diarrhoea"], "Bronchial Asthma": ["fatigue", "cough", "high_fever", "breathlessness", "family_history", "mucoid_sputum"], "Hypertension ": ["headache", "chest_pain", "dizziness", "loss_of_balance", "lack_of_concentration"], "Migraine": ["acidity", "indigestion", "headache", "blurred_and_distorted_vision", "excessive_hunger", "stiff_neck", "depression", "irritability", "visual_disturbances"], "Cervical spondylosis": ["back_pain", "weakness_in_limbs", "neck_pain", "dizziness", "loss_of_balance"], "Paralysis (brain hemorrhage)": ["vomiting", "headache", "weakness_of_one_body_side", "altered_sensorium"], "Jaundice": ["itching", "vomiting", "fatigue", "weight_loss", "high_fever", "yellowish_skin", "dark_urine", "abdominal_pain"], "Malaria": ["chills", "vomiting", "high_fever", "sweating", "headache", "nausea", "diarrhoea", "muscle_pain"], "Chicken pox": ["itching", "skin_rash", "fatigue", "lethargy", "high_fever", "headache", "loss_of_appetite", "mild_fever", "swelled_lymph_nodes", "malaise", "red_spots_over_body"], "Dengue": ["skin_rash", "chills", "joint_pain", "vomiting", "fatigue", "high_fever", "headache", "nausea", "loss_of_appetite", "pain_behind_the_eyes", "back_pain", "malaise", "muscle_pain", "red_spots_over_body"], "Typhoid": ["chills", "vomiting", "fatigue", "high_fever", "headache", "nausea", "constipation", "abdominal_pain", "diarrhoea", "toxic_look_(typhos)", "belly_pain"], "hepatitis A": ["joint_pain", "vomiting", "yellowish_skin", "dark_urine", "nausea", "loss_of_appetite", "abdominal_pain", "diarrhoea", "mild_fever", "yellowing_of_eyes", "muscle_pain"], "Hepatitis B": ["itching", "fatigue", "lethargy", "yellowish_skin", "dark_urine", "loss_of_appetite", "abdominal_pain", "yellow_urine", "yellowing_of_eyes", "malaise", "receiving_blood_transfusion", "receiving_unsterile_injections"], "Hepatitis C": ["fatigue", "yellowish_skin", "nausea", "loss_of_appetite", "yellowing_of_eyes", "family_history"], "Hepatitis D": ["joint_pain", "vomiting", "fatigue", "yellowish_skin", "dark_urine", "nausea", "loss_of_appetite", "abdominal_pain", "yellowing_of_eyes"], "Hepatitis E": ["joint_pain", "vomiting", "fatigue", "high_fever", "yellowish_skin", "dark_urine", "nausea", "loss_of_appetite", "abdominal_pain", "yellowing_of_eyes", "acute_liver_failure", "coma", "stomach_bleeding"], "Alcoholic hepatitis": ["vomiting", "yellowish_skin", "abdominal_pain", "swelling_of_stomach", "distention_of_abdomen", "history_of_alcohol_consumption", "fluid_overload.1"], "Tuberculosis": ["chills", "vomiting", "fatigue", "weight_loss", "cough", "high_fever", "breathlessness", "sweating", "loss_of_appetite", "mild_fever", "yellowing_of_eyes", "swelled_lymph_nodes", "malaise", "phlegm", "chest_pain", "blood_in_sputum"], "Common Cold": ["continuous_sneezing", "chills", "fatigue", "cough", "high_fever", "headache", "swelled_lymph_nodes", "malaise", "phlegm", "throat_irritation", "redness_of_eyes", "sinus_pressure", "runny_nose", "congestion", "chest_pain", "loss_of_smell", "muscle_pain"], "Pneumonia": ["chills", "fatigue", "cough", "high_fever", "breathlessness", "sweating", "malaise", "phlegm", "chest_pain", "fast_heart_rate", "rusty_sputum"], "Dimorphic hemmorhoids(piles)": ["constipation", "pain_during_bowel_movements", "pain_in_anal_region", "bloody_stool", "irritation_in_anus"], "Heart attack": ["vomiting", "breathlessness", "sweating", "chest_pain"], "Varicose veins": ["fatigue", "cramps", "bruising", "obesity", "swollen_legs", "swollen_blood_vessels", "prominent_veins_on_calf"], "Hypothyroidism": ["fatigue", "weight_gain", "cold_hands_and_feets", "mood_swings", "lethargy", "dizziness", "puffy_face_and_eyes", "enlarged_thyroid", "brittle_nails", "swollen_extremeties", "depression", "irritability", "abnormal_menstruation"], "Hyperthyroidism": ["fatigue", "mood_swings", "weight_loss", "restlessness", "sweating", "diarrhoea", "fast_heart_rate", "excessive_hunger", "muscle_weakness", "irritability", "abnormal_menstruation"], "Hypoglycemia": ["vomiting", "fatigue", "anxiety", "sweating", "headache", "nausea", "blurred_and_distorted_vision", "excessive_hunger", "drying_and_tingling_lips", "slurred_speech", "irritability", "palpitations"], "Osteoarthristis": ["joint_pain", "neck_pain", "knee_pain", "hip_joint_pain", "swelling_joints", "painful_walking"], "Arthritis": ["muscle_weakness", "stiff_neck", "swelling_joints", "movement_stiffness", "painful_walking"], "(vertigo) Paroymsal  Positional Vertigo": ["vomiting", "headache", "nausea", "spinning_movements", "loss_of_balance", "unsteadiness"], "Acne": ["skin_rash", "pus_filled_pimples", "blackheads", "scurring"], "Urinary tract infection": ["burning_micturition", "bladder_discomfort", "foul_smell_of urine", "continuous_feel_of_urine"], "Psoriasis": ["skin_rash", "joint_pain", "skin_peeling", "silver_like_dusting", "small_dents_in_nails", "inflammatory_nails"], "Impetigo": ["skin_rash", "high_fever", "blister", "red_sore_around_nose", "yellow_crust_ooze"]};
+            const QUESTION_MAP = {"itching": "Do you have itching?", "skin_rash": "Do you have a skin rash?", "vomiting": "Do you have vomiting?", "high_fever": "Do you have a high fever?", "mild_fever": "Do you have a mild fever?", "nausea": "Do you feel nauseous?", "fatigue": "Do you feel fatigued or exhausted?", "headache": "Do you have a headache?", "cough": "Do you have a cough?", "breathlessness": "Do you have difficulty breathing?", "chest_pain": "Do you have chest pain?", "joint_pain": "Do you have joint pain?", "back_pain": "Do you have back pain?", "abdominal_pain": "Do you have abdominal pain?", "diarrhoea": "Do you have diarrhea?", "constipation": "Are you constipated?", "sweating": "Are you sweating excessively?", "chills": "Do you have chills?", "dizziness": "Do you feel dizzy?", "weight_loss": "Have you lost weight recently?", "weight_gain": "Have you gained weight recently?", "yellowish_skin": "Has your skin turned yellowish?", "yellowing_of_eyes": "Have the whites of your eyes turned yellow?", "dark_urine": "Is your urine dark?", "loss_of_appetite": "Have you lost your appetite?", "muscle_pain": "Do you have muscle pain?", "neck_pain": "Do you have neck pain?", "knee_pain": "Do you have knee pain?", "runny_nose": "Do you have a runny nose?", "congestion": "Do you have nasal congestion?", "throat_irritation": "Do you have a sore throat?", "skin_peeling": "Is your skin peeling?", "pus_filled_pimples": "Do you have pus-filled pimples?", "blackheads": "Do you have blackheads?", "anxiety": "Do you feel unusually anxious?", "depression": "Have you been feeling depressed?", "fast_heart_rate": "Is your heart beating faster than usual?", "swelling_joints": "Are your joints swollen?", "movement_stiffness": "Do you have stiffness when moving?", "spinning_movements": "Do you feel like everything is spinning (vertigo)?", "loss_of_balance": "Do you have trouble keeping your balance?", "blurred_and_distorted_vision": "Is your vision blurry?", "excessive_hunger": "Are you feeling excessively hungry?", "polyuria": "Are you urinating more frequently than usual?", "phlegm": "Are you coughing up phlegm?", "blood_in_sputum": "Have you noticed blood when coughing?", "swelled_lymph_nodes": "Are your lymph nodes swollen?", "red_spots_over_body": "Do you have red spots over your body?", "enlarged_thyroid": "Have you noticed swelling in your neck (thyroid)?", "cold_hands_and_feets": "Do your hands and feet feel cold?", "palpitations": "Do you feel heart palpitations?", "dehydration": "Do you feel dehydrated?", "indigestion": "Do you have indigestion?", "nodal_skin_eruptions": "Do you have nodal skin eruptions?", "continuous_sneezing": "Do you have continuous sneezing?", "shivering": "Do you have shivering?", "stomach_pain": "Do you have stomach pain?", "acidity": "Do you have acidity?", "ulcers_on_tongue": "Do you have ulcers on tongue?", "muscle_wasting": "Do you have muscle wasting?", "burning_micturition": "Do you have burning micturition?", "spotting_ urination": "Do you have spotting  urination?", "mood_swings": "Do you have mood swings?", "restlessness": "Do you have restlessness?", "lethargy": "Do you have lethargy?", "patches_in_throat": "Do you have patches in throat?", "irregular_sugar_level": "Do you have irregular sugar level?", "sunken_eyes": "Do you have sunken eyes?", "pain_behind_the_eyes": "Do you have pain behind the eyes?", "yellow_urine": "Do you have yellow urine?", "acute_liver_failure": "Do you have acute liver failure?", "fluid_overload": "Do you have fluid overload?", "swelling_of_stomach": "Do you have swelling of stomach?", "malaise": "Do you have malaise?", "redness_of_eyes": "Do you have redness of eyes?", "sinus_pressure": "Do you have sinus pressure?", "weakness_in_limbs": "Do you have weakness in limbs?", "pain_during_bowel_movements": "Do you have pain during bowel movements?", "pain_in_anal_region": "Do you have pain in anal region?", "bloody_stool": "Do you have bloody stool?", "irritation_in_anus": "Do you have irritation in anus?", "cramps": "Do you have cramps?", "bruising": "Do you have bruising?", "obesity": "Do you have obesity?", "swollen_legs": "Do you have swollen legs?", "swollen_blood_vessels": "Do you have swollen blood vessels?", "puffy_face_and_eyes": "Do you have puffy face and eyes?", "brittle_nails": "Do you have brittle nails?", "swollen_extremeties": "Do you have swollen extremeties?", "extra_marital_contacts": "Do you have extra marital contacts?", "drying_and_tingling_lips": "Do you have drying and tingling lips?", "slurred_speech": "Do you have slurred speech?", "hip_joint_pain": "Do you have hip joint pain?", "muscle_weakness": "Do you have muscle weakness?", "stiff_neck": "Do you have stiff neck?", "unsteadiness": "Do you have unsteadiness?", "weakness_of_one_body_side": "Do you have weakness of one body side?", "loss_of_smell": "Do you have loss of smell?", "bladder_discomfort": "Do you have bladder discomfort?", "foul_smell_of urine": "Do you have foul smell of urine?", "continuous_feel_of_urine": "Do you have continuous feel of urine?", "passage_of_gases": "Do you have passage of gases?", "internal_itching": "Do you have internal itching?", "toxic_look_(typhos)": "Do you have toxic look (typhos)?", "irritability": "Do you have irritability?", "altered_sensorium": "Do you have altered sensorium?", "belly_pain": "Do you have belly pain?", "abnormal_menstruation": "Do you have abnormal menstruation?", "dischromic _patches": "Do you have dischromic  patches?", "watering_from_eyes": "Do you have watering from eyes?", "increased_appetite": "Do you have increased appetite?", "family_history": "Do you have family history?", "mucoid_sputum": "Do you have mucoid sputum?", "rusty_sputum": "Do you have rusty sputum?", "lack_of_concentration": "Do you have lack of concentration?", "visual_disturbances": "Do you have visual disturbances?", "receiving_blood_transfusion": "Do you have receiving blood transfusion?", "receiving_unsterile_injections": "Do you have receiving unsterile injections?", "coma": "Do you have coma?", "stomach_bleeding": "Do you have stomach bleeding?", "distention_of_abdomen": "Do you have distention of abdomen?", "history_of_alcohol_consumption": "Do you have history of alcohol consumption?", "fluid_overload.1": "Do you have fluid overload.1?", "prominent_veins_on_calf": "Do you have prominent veins on calf?", "painful_walking": "Do you have painful walking?", "scurring": "Do you have scurring?", "silver_like_dusting": "Do you have silver like dusting?", "small_dents_in_nails": "Do you have small dents in nails?", "inflammatory_nails": "Do you have inflammatory nails?", "blister": "Do you have blister?", "red_sore_around_nose": "Do you have red sore around nose?", "yellow_crust_ooze": "Do you have yellow crust ooze?"};
+            const ALL_SYMPTOMS = Object.keys(QUESTION_MAP);
+
+            // ── Normalized lookup (trims trailing spaces from disease keys) ──
+            const DS_NORM = {};
+            for (const [k, v] of Object.entries(DISEASE_SYMPTOMS)) {
+                DS_NORM[k.trim()] = v;
+            }
+            function getSyms(disease) {
+                return DS_NORM[disease] || DS_NORM[(disease||'').trim()] || [];
+            }
+            function allDiseases() {
+                return Object.keys(DS_NORM);
+            }
+
+            let confirmedSyms = [];
+            let rejectedSyms = [];
+            let askedSyms = [];
+            let currentQuestion = null;
+
+            // Updated UI Rendering for Messages
+            function addMsg(text, sender) {
+                const box = document.getElementById('chatBox');
+                const div = document.createElement('div');
+                const isAI = sender === 'ai';
+                
+                div.className = isAI 
+                    ? 'chat-bubble-ai p-3 rounded-3 align-self-start' 
+                    : 'chat-bubble-user p-3 rounded-3 align-self-end ms-auto';
+                div.style.maxWidth = '85%';
+                div.style.lineHeight = '1.5';
+                div.style.fontSize = '14px';
+                div.innerHTML = text;
+                
+                box.appendChild(div);
+                box.scrollTop = box.scrollHeight;
+            }
+
+            // Updated progress calculations and styles
+            function updateProgress(pct) {
+                const bar = document.getElementById('confBar');
+                const label = document.getElementById('confLabel');
+                const cappedPct = Math.min(pct, 100);
+                
+                bar.style.width = cappedPct + '%';
+                label.textContent = Math.round(cappedPct) + '%';
+                
+                // Use HSL variables/colors matching standard design guidelines
+                if (cappedPct >= 70) {
+                    bar.style.background = 'var(--accent-emerald)';
+                    label.style.color = 'var(--accent-emerald)';
+                } else if (cappedPct >= 40) {
+                    bar.style.background = 'var(--accent-orange)';
+                    label.style.color = 'var(--accent-orange)';
+                } else {
+                    bar.style.background = 'var(--accent-cyan)';
+                    label.style.color = 'var(--accent-cyan)';
+                }
+            }
+
+            // Preserved original decision tree chatbot logic
+            function bestNextQuestion() {
+                // Priority 1: Ask about symptoms of the TOP candidate first
+                const topCandidate = candidates[0];
+                if (topCandidate) {
+                    const topSyms = getSyms(topCandidate)
+                        .filter(s => !askedSyms.includes(s) && !confirmedSyms.includes(s));
+                    let bestTopSym = null, bestSplit = Infinity;
+                    for (const sym of topSyms) {
+                        const w  = candidates.filter(d => getSyms(d).includes(sym));
+                        const wo = candidates.filter(d => !getSyms(d).includes(sym));
+                        if (!w.length || !wo.length) continue;
+                        const split = Math.abs(w.length - wo.length);
+                        if (split < bestSplit) { bestSplit = split; bestTopSym = sym; }
+                    }
+                    if (bestTopSym) return bestTopSym;
+                }
+
+                // Priority 2: General binary split among all candidates
+                let bestSym = null, bestScore = Infinity;
+                for (const sym of ALL_SYMPTOMS) {
+                    if (askedSyms.includes(sym)) continue;
+                    if (confirmedSyms.includes(sym)) continue;
+                    const w  = candidates.filter(d => getSyms(d).includes(sym));
+                    const wo = candidates.filter(d => !getSyms(d).includes(sym));
+                    if (!w.length || !wo.length) continue;
+                    const score = Math.abs(w.length - wo.length);
+                    if (score < bestScore) { bestScore = score; bestSym = sym; }
+                }
+                return bestSym;
+            }
+
+            function answer(isYes) {
+                if (!currentQuestion) return;
+                addMsg(isYes ? 'Yes' : 'No', 'user');
+                if (isYes) {
+                    confirmedSyms.push(currentQuestion);
+                    // Keep only candidates that include this symptom
+                    candidates = candidates.filter(d => getSyms(d).includes(currentQuestion));
+                } else {
+                    rejectedSyms.push(currentQuestion);
+                    // Remove candidates that have the denied symptom but share ZERO confirmed
+                    // symptoms with the user — avoids wrong-disease takeover
+                    candidates = candidates.filter(d => {
+                        const dSyms = getSyms(d);
+                        if (!dSyms.includes(currentQuestion)) return true; // doesn't have it → keep
+                        const shared = confirmedSyms.filter(s => dSyms.includes(s)).length;
+                        return shared > 0; // keep only if it also matches something confirmed
+                    });
+                }
+                // Progress based on questions answered (max 8)
+                updateProgress(Math.min((askedSyms.length / 8) * 95, 95));
+
+                if (candidates.length === 1) {
+                    // Calculate real confidence based on confirmed symptom match ratio
+                    const totalSyms = (DISEASE_SYMPTOMS[candidates[0]] || []).length || 1;
+                    const matched = confirmedSyms.filter(s => (DISEASE_SYMPTOMS[candidates[0]] || []).includes(s)).length;
+                    const dynConf = Math.min(60 + Math.round((matched / totalSyms) * 38), 98);
+                    showResult(candidates[0], dynConf);
+                    return;
+                }
+                if (candidates.length === 0) {
+                    let best = null, bc = -1;
+                    for (const d of allDiseases()) {
+                        const c = confirmedSyms.filter(x => getSyms(d).includes(x)).length;
+                        if (c > bc) { bc = c; best = d; }
+                    }
+                    showResult(best, 60);
+                    return;
+                }
+                if (confirmedSyms.length >= 5 && candidates.length <= 3) {
+                    let best = null, bc = -1;
+                    for (const d of candidates) {
+                        const c = confirmedSyms.filter(s => getSyms(d).includes(s)).length;
+                        if (c > bc) {
+                            bc = c;
+                            best = d;
+                        }
+                    }
+                    showResult(best, Math.min(55 + bc * 8, 92));
+                    return;
+                }
+                askNext();
+            }
+
+            function askNext() {
+                // Timeout: after 8 questions, force result
+                if (askedSyms.length >= 8) {
+                    const pool = candidates.length > 0 ? candidates : allDiseases();
+                    let best = pool[0], bestScore = -1;
+                    for (const d of pool) {
+                        const score = confirmedSyms.filter(s => getSyms(d).includes(s)).length;
+                        if (score > bestScore) { bestScore = score; best = d; }
+                    }
+                    showResult(best, Math.min(50 + bestScore * 8, 85));
+                    return;
+                }
+                const sym = bestNextQuestion();
+                if (!sym) {
+                    const pool = candidates.length > 0 ? candidates : allDiseases();
+                    let best = pool[0], bestScore = -1;
+                    for (const d of pool) {
+                        const score = confirmedSyms.filter(s => getSyms(d).includes(s)).length;
+                        if (score > bestScore) { bestScore = score; best = d; }
+                    }
+                    showResult(best, 65);
+                    return;
+                }
+                currentQuestion = sym;
+                askedSyms.push(sym);
+                addMsg('<b>Question ' + (askedSyms.length - confirmedSyms.length) + ':</b> ' + (QUESTION_MAP[sym] || 'Do you have ' + sym.replace(/_/g, ' ') + '?'), 'ai');
+            }
+
+            function showResult(disease, confidence) {
+                document.getElementById('answerArea').style.display = 'none';
+                document.getElementById('resultArea').style.display = 'block';
+                updateProgress(Math.min(confidence, 100));
+                const warn = confidence < 60 ? '<br><small style="color: var(--accent-orange);">Low confidence - please consult a doctor.</small>' : '';
+                document.getElementById('resultText').innerHTML =
+                    'Based on your symptoms (<b style="color: var(--accent-emerald);">' + confirmedSyms.join(', ').replace(/_/g, ' ') + '</b>):<br><br>' +
+                    '<span style="font-size:22px;font-weight:bold;color: var(--accent-emerald);">' + disease + '</span>' +
+                    '<span style="color: var(--accent-cyan);"> - ' + confidence + '% confidence</span>' + warn;
+                window._chatDiagnosis = disease;
+                window._chatConfidence = confidence;  // store actual confidence
+                addMsg('Diagnosis complete: <b>' + disease + '</b> (' + confidence + '% confidence)', 'ai');
+            }
+
+            function useResultForDetails() {
+                if (!window._chatDiagnosis) return;
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = '/predict_chat';
+                const i1 = document.createElement('input');
+                i1.type = 'hidden';
+                i1.name = 'symptoms';
+                i1.value = confirmedSyms.join(',');
+                const i2 = document.createElement('input');
+                i2.type = 'hidden';
+                i2.name = 'disease';
+                i2.value = window._chatDiagnosis;
+                // Pass the actual chatbot confidence so Dashboard shows the correct value
+                const i3 = document.createElement('input');
+                i3.type = 'hidden';
+                i3.name = 'confidence';
+                i3.value = window._chatConfidence || 85;
+                form.appendChild(i1);
+                form.appendChild(i2);
+                form.appendChild(i3);
+                document.body.appendChild(form);
+                form.submit();
+            }
+
+            function resetChat() {
+                candidates = Object.keys(DISEASE_SYMPTOMS);
+                confirmedSyms = [];
+                rejectedSyms = [];
+                askedSyms = [];
+                currentQuestion = null;
+                document.getElementById('chatBox').innerHTML = '';
+                document.getElementById('resultArea').style.display = 'none';
+                document.getElementById('answerArea').style.display = 'flex';
+                updateProgress(0);
+                startFollowUp('');
+            }
+
+            function startFollowUp(initialText, top3Diseases) {
+                if (typeof chatStarted !== 'undefined' && chatStarted) return;
+                chatStarted = true;
+
+                // Start from LSTM top3 if available — use normalized lookup
+                if (top3Diseases && top3Diseases.length > 0) {
+                    const valid = top3Diseases.filter(d => getSyms(d).length > 0);
+                    candidates = valid.length > 0 ? valid : allDiseases();
+                } else {
+                    candidates = allDiseases();
+                }
+
+                confirmedSyms = [];
+                rejectedSyms  = [];
+                askedSyms     = [];
+                currentQuestion = null;
+
+                document.getElementById('chatbotWrapper').style.display = 'block';
+                // Do NOT auto-scroll to chatbot — user scrolls to it manually
+
+                // Extract symptoms from text — add to askedSyms only (NO candidate filtering)
+                // We don't filter candidates here because it causes "Unknown" when
+                // extracted symptoms don't match the top3 diseases
+                if (initialText) {
+                    const t = initialText.toLowerCase().replace(/[^a-z\s]/g, ' ');
+                    const synonyms = {
+                        // Skin
+                        'skin rash':'skin_rash','rash':'skin_rash','itching':'itching','itchy':'itching',
+                        'peeling':'skin_peeling','skin peeling':'skin_peeling',
+                        // Fever
+                        'high fever':'high_fever','fever':'high_fever','mild fever':'mild_fever',
+                        // GI
+                        'vomiting':'vomiting','nausea':'nausea','diarrhea':'diarrhoea','diarrhoea':'diarrhoea',
+                        'stomach pain':'stomach_pain','abdominal pain':'abdominal_pain','belly pain':'belly_pain',
+                        'indigestion':'indigestion','loss of appetite':'loss_of_appetite',
+                        // Respiratory
+                        'cough':'cough','chest pain':'chest_pain','breathlessness':'breathlessness',
+                        'shortness of breath':'breathlessness','phlegm':'phlegm',
+                        // Neurological
+                        'headache':'headache','dizziness':'dizziness','blurred vision':'blurred_and_distorted_vision',
+                        'vision blur':'blurred_and_distorted_vision',
+                        // Musculoskeletal
+                        'joint pain':'joint_pain','back pain':'back_pain','neck pain':'neck_pain',
+                        'knee pain':'knee_pain','muscle pain':'muscle_pain','cramps':'cramps',
+                        'stiff neck':'stiff_neck','swollen joints':'swelling_joints',
+                        // General
+                        'fatigue':'fatigue','exhausted':'fatigue','exhaustion':'fatigue',
+                        'tired':'fatigue','tiredness':'fatigue','weakness':'fatigue',
+                        'weight loss':'weight_loss','weight gain':'weight_gain',
+                        'sweating':'sweating','chills':'chills','malaise':'malaise',
+                        // Diabetes / urinary
+                        'thirsty':'polyuria','very thirsty':'polyuria','excessive thirst':'polyuria',
+                        'urinate frequently':'polyuria','frequent urination':'polyuria',
+                        'polyuria':'polyuria','increased urination':'polyuria',
+                        'excessive hunger':'excessive_hunger','increased appetite':'increased_appetite',
+                        'restless':'restlessness','restlessness':'restlessness',
+                        'irregular sugar':'irregular_sugar_level','blood sugar':'irregular_sugar_level',
+                        // Eyes / skin colour
+                        'yellowish skin':'yellowish_skin','yellow skin':'yellowish_skin',
+                        'dark urine':'dark_urine','yellow eyes':'yellowing_of_eyes',
+                        // Misc
+                        'pimples':'pus_filled_pimples','blackheads':'blackheads',
+                        'burning urination':'burning_micturition',
+                        'runny nose':'runny_nose','sore throat':'throat_irritation',
+                        'red spots':'red_spots_over_body','swollen lymph':'swelled_lymph_nodes',
+                        'anxiety':'anxiety','depression':'depression','palpitations':'palpitations',
+                        'dehydration':'dehydration','obesity':'obesity',
+                    };
+                    const sorted = Object.keys(synonyms).sort((a,b)=>b.length-a.length);
+                    for (const phrase of sorted) {
+                        if (t.includes(phrase)) {
+                            const sym = synonyms[phrase];
+                            if (!askedSyms.includes(sym)) {
+                                askedSyms.push(sym);      // skip asking about it
+                                confirmedSyms.push(sym);  // count as confirmed (for scoring)
+                            }
+                        }
+                    }
+                }
+
+                const symList = confirmedSyms.length
+                    ? ' I noted: <b>' + confirmedSyms.join(', ').replace(/_/g,' ') + '</b>.'
+                    : '';
+                const greeting = initialText
+                    ? 'You mentioned: <i>"' + initialText + '"</i>.' + symList + '<br>Let me ask a few more targeted questions.'
+                    : 'Let me ask a few follow-up questions to narrow down your diagnosis.';
+
+                addMsg(greeting, 'ai');
+                setTimeout(askNext, 700);
+            }
+
+            // Auto-trigger — pass LSTM top3 as starting candidates
+            var chatStarted = false;
+            var top3Diseases = [{% if top3_lstm %}{% for disease, conf in top3_lstm %}"{{ disease }}"{% if not loop.last %},{% endif %}{% endfor %}{% endif %}];
+            var fromChat = "{{ request.endpoint }}" === 'predict_chat';
+            if (!fromChat) {
+                startFollowUp("{{ request.form.get('symptoms', '') | e }}", top3Diseases);
+            }
+
+            // Scroll to AI Diagnostics Dashboard (not chatbot) after results appear
+            const dashboard = document.getElementById('dashboardSection');
+            if (dashboard) {
+                setTimeout(function() {
+                    dashboard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }, 120);
+            }
+        </script>
+        {% endif %}
+    </div>
+
+    <!-- Unified Footer -->
+    <footer class="clinic-footer text-center">
+        <div class="container">
+            <p class="mb-1">© 2026 Health Care Center - Personal Clinical AI Hub. All rights reserved.</p>
+            <p class="mb-0 text-muted" style="font-size: 0.8rem;">Disclaimer: This clinical prediction model is for informational and educational purposes only and does not constitute medical advice.</p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap 5 JavaScript Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm" crossorigin="anonymous"></script>
+    
+    <!-- Theme Toggle Functionality Script -->
+    <script>
+        const themeToggleBtn = document.getElementById('themeToggle');
+        
+        function setTheme(theme) {
+            if (theme === 'light') {
+                document.documentElement.classList.add('light-theme');
+                if (themeToggleBtn) {
+                    themeToggleBtn.textContent = '☀️';
+                    themeToggleBtn.style.background = 'rgba(0,0,0,0.06)';
+                }
+            } else {
+                document.documentElement.classList.remove('light-theme');
+                if (themeToggleBtn) {
+                    themeToggleBtn.textContent = '🌙';
+                    themeToggleBtn.style.background = 'rgba(255,255,255,0.08)';
+                }
+            }
+            localStorage.setItem('theme', theme);
+        }
+        
+        // Initialise theme icons & values
+        const currentTheme = localStorage.getItem('theme') || 'dark';
+        setTheme(currentTheme);
+        
+        if (themeToggleBtn) {
+            themeToggleBtn.addEventListener('click', () => {
+                const activeTheme = localStorage.getItem('theme') || 'dark';
+                if (activeTheme === 'dark') {
+                    setTheme('light');
+                } else {
+                    setTheme('dark');
+                }
+            });
+        }
+    </script>
+</body>
+</html>

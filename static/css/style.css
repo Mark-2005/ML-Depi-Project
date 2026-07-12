@@ -1,0 +1,645 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
+
+:root {
+    /* Color Palette */
+    --bg-gradient-start: #0b0f19;
+    --bg-gradient-end: #151e33;
+    --bg-card: rgba(17, 24, 39, 0.6);
+    --bg-card-hover: rgba(17, 24, 39, 0.75);
+    --border-color: rgba(255, 255, 255, 0.08);
+    --border-hover: rgba(6, 182, 212, 0.3);
+    
+    /* Brand Accents */
+    --accent-emerald: #10b981;
+    --accent-emerald-glow: rgba(16, 185, 129, 0.15);
+    --accent-cyan: #06b6d4;
+    --accent-cyan-glow: rgba(6, 182, 212, 0.15);
+    --accent-rose: #f43f5e;
+    --accent-rose-glow: rgba(244, 63, 94, 0.15);
+    --accent-orange: #f59e0b;
+    --accent-orange-glow: rgba(245, 158, 11, 0.15);
+    --accent-purple: #8b5cf6;
+    --accent-purple-glow: rgba(139, 92, 246, 0.15);
+    --accent-blue: #3b82f6;
+    --accent-blue-glow: rgba(59, 130, 246, 0.15);
+    
+    /* Text Colors */
+    --text-primary: #f8fafc;
+    --text-secondary: #94a3b8;
+    --text-muted: #64748b;
+    
+    /* Shadows */
+    --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    --shadow-glow-cyan: 0 0 15px rgba(6, 182, 212, 0.4);
+    --shadow-glow-emerald: 0 0 15px rgba(16, 185, 129, 0.4);
+
+    /* Dynamic Hardcoded Background Overrides */
+    --bg-dash-card: rgba(15, 23, 42, 0.45);
+    --bg-dash-card-hover: rgba(15, 23, 42, 0.6);
+    --bg-chat-container: rgba(11, 15, 25, 0.8);
+    --bg-chat-box: rgba(15, 23, 42, 0.5);
+    --bg-chat-bubble-ai: rgba(30, 41, 59, 0.8);
+    --bg-navbar: rgba(11, 15, 25, 0.7);
+    --bg-footer: rgba(11, 15, 25, 0.4);
+    --bg-form-input: rgba(15, 23, 42, 0.5);
+    --bg-form-input-focus: rgba(15, 23, 42, 0.8);
+    --title-gradient-start: #ffffff;
+}
+
+/* Light Theme Variables */
+:root.light-theme {
+    --bg-primary: #f0f4f8;
+    --glass-bg: rgba(255, 255, 255, 0.8);
+    --text-primary: #1a1a2e;
+    --border-color: rgba(0, 0, 0, 0.1);
+    
+    --bg-gradient-start: var(--bg-primary);
+    --bg-gradient-end: #dbe2e9;
+    --bg-card: var(--glass-bg);
+    --bg-card-hover: rgba(255, 255, 255, 0.9);
+    --border-hover: rgba(6, 182, 212, 0.4);
+    
+    --text-secondary: #334155;
+    --text-muted: #64748b;
+    
+    --bg-dash-card: rgba(255, 255, 255, 0.7);
+    --bg-dash-card-hover: rgba(255, 255, 255, 0.85);
+    --bg-chat-container: rgba(255, 255, 255, 0.8);
+    --bg-chat-box: rgba(255, 255, 255, 0.5);
+    --bg-chat-bubble-ai: rgba(255, 255, 255, 0.9);
+    --bg-navbar: rgba(255, 255, 255, 0.8);
+    --bg-footer: rgba(255, 255, 255, 0.5);
+    --bg-form-input: rgba(255, 255, 255, 0.7);
+    --bg-form-input-focus: rgba(255, 255, 255, 0.95);
+    --title-gradient-start: #0b0f19;
+    
+    --accent-cyan: #0891b2;
+    --accent-emerald: #059669;
+    --accent-orange: #d97706;
+}
+
+/* Global Transitions for Theme Toggle */
+body, .glass-navbar, .glass-card, .dash-card, .form-control-custom, .chat-container, .chat-box-area, .chat-bubble-ai, .clinic-footer, .nav-link, #themeToggle, .clinic-title {
+    transition: background 0.3s ease, background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease, -webkit-text-fill-color 0.3s ease;
+}
+
+/* Global Reset & Body */
+body {
+    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
+    background-attachment: fixed;
+    color: var(--text-primary);
+    min-height: 100vh;
+    letter-spacing: -0.01em;
+    overflow-x: hidden;
+}
+
+/* Glassmorphism Navigation Bar */
+.glass-navbar {
+    background: var(--bg-navbar) !important;
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border-color);
+    padding: 1rem 0;
+    transition: all 0.3s ease;
+}
+
+.glass-navbar .navbar-brand {
+    font-weight: 700;
+    font-size: 1.4rem;
+    letter-spacing: -0.02em;
+    background: linear-gradient(90deg, var(--accent-cyan) 0%, var(--accent-emerald) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.glass-navbar .nav-link {
+    color: var(--text-secondary) !important;
+    font-weight: 500;
+    padding: 0.5rem 1rem !important;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+}
+
+.glass-navbar .nav-link:hover, 
+.glass-navbar .nav-link.active {
+    color: var(--text-primary) !important;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.glass-navbar .logo img {
+    border: 2px solid var(--accent-cyan);
+    padding: 2px;
+    transition: transform 0.3s ease;
+}
+
+.glass-navbar .logo img:hover {
+    transform: rotate(10deg) scale(1.05);
+}
+
+/* Forms & Inputs */
+.form-control-custom {
+    background: var(--bg-form-input) !important;
+    border: 1px solid var(--border-color) !important;
+    color: var(--text-primary) !important;
+    border-radius: 12px !important;
+    padding: 14px 20px !important;
+    font-size: 1rem;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.form-control-custom:focus {
+    border-color: var(--accent-cyan) !important;
+    box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.25) !important;
+    background: var(--bg-form-input-focus) !important;
+}
+
+.form-control-custom::placeholder {
+    color: var(--text-muted);
+}
+
+/* Buttons */
+.btn-premium-primary {
+    background: linear-gradient(135deg, var(--accent-cyan) 0%, var(--accent-emerald) 100%);
+    border: none;
+    color: #0b0f19;
+    font-weight: 600;
+    padding: 14px 28px;
+    border-radius: 12px;
+    letter-spacing: 0.02em;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 14px rgba(6, 182, 212, 0.3);
+}
+
+.btn-premium-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+    filter: brightness(1.05);
+    color: #0b0f19;
+}
+
+.btn-premium-primary:active {
+    transform: translateY(0);
+}
+
+/* Glassmorphism Cards */
+.glass-card {
+    background: var(--bg-card);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    padding: 2.5rem;
+    box-shadow: var(--shadow-lg);
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.glass-card:hover {
+    border-color: var(--border-hover);
+}
+
+/* Diagnostics Header */
+.clinic-title {
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    background: linear-gradient(135deg, var(--title-gradient-start) 0%, var(--text-secondary) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 0.5rem;
+}
+
+.clinic-subtitle {
+    color: var(--text-secondary);
+    font-weight: 400;
+    font-size: 1.1rem;
+    max-width: 600px;
+    margin: 0 auto 2.5rem;
+}
+
+/* AI Diagnostics Dashboard Layout */
+.dashboard-title {
+    font-weight: 700;
+    margin-bottom: 2rem;
+    position: relative;
+    padding-bottom: 0.5rem;
+}
+
+.dashboard-title::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 4px;
+    background: var(--accent-emerald);
+    border-radius: 2px;
+}
+
+/* Dashboard Layout Grid */
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 24px;
+}
+
+@media (min-width: 992px) {
+    .dashboard-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+    
+    .grid-span-2 {
+        grid-column: span 2;
+    }
+}
+
+/* Modern Card Layouts */
+.dash-card {
+    background: var(--bg-dash-card);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 1.8rem;
+    transition: all 0.3s ease;
+    height: 100%;
+}
+
+.dash-card:hover {
+    border-color: var(--border-hover);
+    background: var(--bg-dash-card-hover);
+    transform: translateY(-2px);
+}
+
+.dash-card-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    padding-bottom: 12px;
+}
+
+.dash-card-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    font-weight: bold;
+}
+
+/* Card Icons Customizations */
+.icon-overview { background: var(--accent-cyan-glow); color: var(--accent-cyan); }
+.icon-comparison { background: var(--accent-blue-glow); color: var(--accent-blue); }
+.icon-treatment { background: var(--accent-rose-glow); color: var(--accent-rose); }
+.icon-lifestyle { background: var(--accent-orange-glow); color: var(--accent-orange); }
+
+.dash-card-title {
+    font-weight: 600;
+    font-size: 1.2rem;
+    margin: 0;
+    color: var(--text-primary);
+}
+
+/* Result Overview Detail */
+.disease-badge {
+    display: inline-block;
+    padding: 8px 16px;
+    background: var(--accent-emerald-glow);
+    border: 1px solid var(--accent-emerald);
+    color: var(--accent-emerald);
+    font-weight: 700;
+    border-radius: 8px;
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 0 15px rgba(16, 185, 129, 0.1);
+}
+
+.confidence-indicator {
+    color: var(--accent-cyan);
+    font-weight: 600;
+    font-size: 0.95rem;
+    margin-bottom: 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.disease-description {
+    color: var(--text-secondary);
+    font-size: 1rem;
+    line-height: 1.6;
+}
+
+/* Custom Progress Bar Styling */
+.progress-container-custom {
+    margin-bottom: 16px;
+}
+
+.progress-label-custom {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.9rem;
+    margin-bottom: 6px;
+    color: var(--text-secondary);
+}
+
+.progress-label-custom span:first-child {
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+.progress-bar-custom {
+    height: 10px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 5px;
+    overflow: hidden;
+    position: relative;
+}
+
+.progress-fill-custom {
+    height: 100%;
+    border-radius: 5px;
+    transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Comparison Colors */
+.bg-lstm { background: linear-gradient(90deg, var(--accent-cyan) 0%, var(--accent-blue) 100%); }
+.bg-tfidf { background: linear-gradient(90deg, var(--accent-orange) 0%, var(--accent-rose) 100%); }
+
+/* Treatment List Styling */
+.treatment-section-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-top: 1.25rem;
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.treatment-section-title.precaution { color: var(--accent-orange); }
+.treatment-section-title.medication { color: var(--accent-rose); }
+.treatment-section-title.diet { color: var(--accent-emerald); }
+.treatment-section-title.workout { color: var(--accent-purple); }
+
+.treatment-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.treatment-item {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.04);
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-size: 0.92rem;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    transition: all 0.2s ease;
+}
+
+.treatment-item:hover {
+    background: rgba(255, 255, 255, 0.04);
+    transform: translateX(4px);
+}
+
+.treatment-bullet {
+    font-weight: bold;
+    margin-top: 2px;
+}
+
+.treatment-bullet.precaution { color: var(--accent-orange); }
+.treatment-bullet.medication { color: var(--accent-rose); }
+.treatment-bullet.diet { color: var(--accent-emerald); }
+.treatment-bullet.workout { color: var(--accent-purple); }
+
+.doctor-disclaimer {
+    background: rgba(244, 63, 94, 0.08);
+    border: 1px dashed rgba(244, 63, 94, 0.3);
+    padding: 12px;
+    border-radius: 10px;
+    color: var(--accent-rose);
+    font-size: 0.85rem;
+    margin-top: 1.5rem;
+    display: flex;
+    gap: 8px;
+    line-height: 1.4;
+}
+
+/* Chatbot Interface Updates */
+.chat-container {
+    background: var(--bg-chat-container) !important;
+    border: 1px solid var(--border-hover) !important;
+    border-radius: 20px !important;
+    padding: 1.8rem !important;
+    max-width: 760px;
+    margin: 0 auto;
+    box-shadow: var(--shadow-glow-cyan);
+    animation: pulseBorder 3s infinite alternate;
+}
+
+@keyframes pulseBorder {
+    0% { border-color: rgba(6, 182, 212, 0.2); }
+    100% { border-color: rgba(6, 182, 212, 0.5); }
+}
+
+.chat-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 1.5rem;
+}
+
+.chat-avatar {
+    width: 44px;
+    height: 44px;
+    background: linear-gradient(135deg, var(--accent-cyan) 0%, var(--accent-blue) 100%);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #0b0f19;
+    font-weight: bold;
+    font-size: 1.2rem;
+    box-shadow: 0 0 10px rgba(6, 182, 212, 0.3);
+}
+
+.chat-title-group h4 {
+    margin: 0;
+    color: var(--accent-cyan);
+    font-weight: 700;
+    font-size: 1.15rem;
+}
+
+.chat-title-group p {
+    margin: 2px 0 0 0;
+    color: var(--text-secondary);
+    font-size: 0.8rem;
+}
+
+.chat-box-area {
+    height: 320px;
+    overflow-y: auto;
+    background: var(--bg-chat-box);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 18px;
+    margin-bottom: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border-color) transparent;
+}
+
+/* Custom Scrollbar for Chatbox */
+.chat-box-area::-webkit-scrollbar {
+    width: 6px;
+}
+.chat-box-area::-webkit-scrollbar-thumb {
+    background: var(--border-color);
+    border-radius: 3px;
+}
+
+/* Bubble Styling */
+.chat-bubble-ai {
+    background: var(--bg-chat-bubble-ai);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+    border-top-left-radius: 4px;
+    box-shadow: var(--shadow-sm);
+}
+
+.chat-bubble-user {
+    background: rgba(16, 185, 129, 0.12);
+    color: var(--accent-emerald);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    border-top-right-radius: 4px;
+    box-shadow: 0 2px 8px rgba(16, 185, 129, 0.05);
+}
+
+/* Progress bar inside Chat */
+.chat-progress-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    margin-bottom: 6px;
+}
+
+.chat-progress-wrapper {
+    background: rgba(255, 255, 255, 0.04);
+    height: 6px;
+    border-radius: 3px;
+    overflow: hidden;
+    margin-bottom: 1.5rem;
+}
+
+.chat-progress-fill {
+    height: 100%;
+    transition: width 0.4s ease, background 0.4s ease;
+}
+
+/* Chat Buttons Area */
+.chat-btn-area {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.chat-btn-yes {
+    flex: 1;
+    min-width: 100px;
+    padding: 12px;
+    background: rgba(16, 185, 129, 0.1);
+    color: var(--accent-emerald);
+    border: 1px solid var(--accent-emerald);
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.chat-btn-yes:hover {
+    background: var(--accent-emerald);
+    color: #0b0f19;
+    box-shadow: 0 0 12px rgba(16, 185, 129, 0.3);
+}
+
+.chat-btn-no {
+    flex: 1;
+    min-width: 100px;
+    padding: 12px;
+    background: rgba(244, 63, 94, 0.1);
+    color: var(--accent-rose);
+    border: 1px solid var(--accent-rose);
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.chat-btn-no:hover {
+    background: var(--accent-rose);
+    color: #0b0f19;
+    box-shadow: 0 0 12px rgba(244, 63, 94, 0.3);
+}
+
+.chat-btn-reset {
+    padding: 12px 20px;
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.chat-btn-reset:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--text-primary);
+}
+
+.chat-result-panel {
+    margin-top: 1.5rem;
+    padding: 1.5rem;
+    background: rgba(16, 185, 129, 0.06);
+    border: 1px solid var(--accent-emerald);
+    border-radius: 12px;
+    animation: slideUp 0.3s ease;
+}
+
+/* Animations Definitions */
+@keyframes slideUp {
+    from { transform: translateY(15px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+.animate-slide-up {
+    animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Unified Footer */
+.clinic-footer {
+    border-top: 1px solid var(--border-color);
+    padding: 2rem 0;
+    margin-top: 5rem;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    background: var(--bg-footer);
+    backdrop-filter: blur(10px);
+}

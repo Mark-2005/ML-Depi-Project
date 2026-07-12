@@ -1,0 +1,53 @@
+جرب الجمل دي:
+
+---
+
+**Psoriasis:**
+```
+I have a skin rash on my arms with a lot of itching and some peeling
+```
+
+**Malaria:**
+```
+I have high fever with chills and sweating and headache
+```
+
+**Diabetes:**
+```
+I feel very thirsty all the time and I urinate frequently and I feel exhausted
+```
+
+**Migraine:**
+```
+I have a severe headache with blurred vision and nausea and sensitivity to light
+```
+
+**Pneumonia:**
+```
+I have a persistent cough with phlegm and high fever and chest pain and difficulty breathing
+```
+
+**Typhoid:**
+```
+I have high fever and vomiting and abdominal pain and constipation
+```
+
+**Dengue:**
+```
+I have high fever with severe joint pain and skin rash and pain behind my eyes
+```
+
+**Arthritis:**
+```
+my joints are swollen and stiff and I have pain when moving especially in the morning
+```
+
+**Acne:**
+```
+I have pus filled pimples and blackheads on my face
+```
+
+**Urinary tract infection:**
+```
+I have burning sensation when urinating and bladder discomfort and frequent urge to urinate
+```

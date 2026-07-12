@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>About Us - Medical AI Hub</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+    <!-- Custom Glassmorphism Stylesheet -->
+    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+    <!-- Theme Detection Block Script -->
+    <script>
+        (function() {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            if (savedTheme === 'light') {
+                document.documentElement.classList.add('light-theme');
+            }
+        })();
+    </script>
+</head>
+<body>
+    <!-- Transparent Glassmorphism Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark glass-navbar sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <div class="logo d-inline-block align-top">
+                    <img src="{{ url_for('static', filename='IMG.PNG') }}" width="40" height="40" class="rounded-circle" alt="Health Care Logo">
+                </div>
+                <span>Health AI Hub</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-center">
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.path == '/' or request.path == '/predict' or request.path == '/predict_chat' or not request.path %}active{% endif %}" href="/">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.path == '/about' %}active{% endif %}" href="/about">About</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.path == '/contact' %}active{% endif %}" href="/contact">Contact</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.path == '/developer' %}active{% endif %}" href="/developer">Developer</a>
+                    </li>
+                    <!-- Theme Toggle Button -->
+                    <li class="nav-item ms-lg-3 mt-2 mt-lg-0">
+                        <button id="themeToggle" class="btn btn-sm rounded-circle border-0 p-0" style="font-size: 1.25rem; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.08); color: var(--text-primary); transition: all 0.2s ease;" title="Toggle Theme">
+                            🌙
+                        </button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <div class="container my-5 animate-slide-up">
+        <!-- Page Header -->
+        <div class="text-center mb-5">
+            <h1 class="clinic-title display-4">About Health AI Hub</h1>
+            <p class="clinic-subtitle">An intelligent medical diagnostic platform leveraging dual-model clinical machine learning architectures.</p>
+        </div>
+
+        <!-- Glassmorphism Main Card -->
+        <div class="glass-card mb-5" style="max-width: 1000px; margin: 0 auto;">
+            <!-- Mission Section -->
+            <div class="mb-5">
+                <h3 class="fw-bold mb-3" style="color: var(--accent-cyan);">Our Mission</h3>
+                <p class="disease-description mb-0">
+                    At Health AI Hub, our mission is to make preliminary healthcare information and AI clinical diagnostics accessible, comprehensive, and clear to everyone. By integrating deep learning sequence prediction and semantic parsing, we enable users to articulate symptoms in plain, free-form text and immediately receive safe, structured wellness analysis, clinical classifications, and guidance for professional consultation.
+                </p>
+            </div>
+
+            <hr class="border-secondary border-opacity-25 my-4">
+
+            <!-- Dataset Section -->
+            <div class="mb-5">
+                <h3 class="fw-bold mb-3" style="color: var(--accent-emerald);">The Clinical Dataset</h3>
+                <p class="disease-description">
+                    The platform is built and validated on the highly acclaimed academic dataset: <strong>Symptom2Disease.csv</strong>. This curated corpus contains:
+                </p>
+                <div class="row g-3 mt-1 mb-3">
+                    <div class="col-md-4">
+                        <div class="p-3 rounded bg-opacity-10 border border-secondary border-opacity-10 text-center" style="background-color: var(--accent-cyan-glow);">
+                            <h4 class="fw-bold mb-1" style="color: var(--accent-cyan);">1,200</h4>
+                            <span class="small text-muted text-uppercase tracking-wider">Clinical Cases</span>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="p-3 rounded bg-opacity-10 border border-secondary border-opacity-10 text-center" style="background-color: var(--accent-emerald-glow);">
+                            <h4 class="fw-bold mb-1" style="color: var(--accent-emerald);">24</h4>
+                            <span class="small text-muted text-uppercase tracking-wider">Disease Classes</span>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="p-3 rounded bg-opacity-10 border border-secondary border-opacity-10 text-center" style="background-color: var(--accent-orange-glow);">
+                            <h4 class="fw-bold mb-1" style="color: var(--accent-orange);">Free Text</h4>
+                            <span class="small text-muted text-uppercase tracking-wider">Unstructured Input</span>
+                        </div>
+                    </div>
+                </div>
+                <p class="disease-description">
+                    Unlike traditional databases that rely on strict binary symptom checklists, this dataset includes highly descriptive, natural language narratives. This replicates real-life clinical intake forms, allowing patients to describe their symptoms in their own words.
+                </p>
+            </div>
+
+            <hr class="border-secondary border-opacity-25 my-4">
+
+            <!-- Models Section -->
+            <div class="mb-5">
+                <h3 class="fw-bold mb-3" style="color: var(--accent-orange);">Dual Model Architecture</h3>
+                <p class="disease-description mb-4">
+                    To maximize diagnostic precision and maintain academic transparency, Health AI Hub evaluates symptom sequences using two distinct architectures:
+                </p>
+
+                <div class="row g-4">
+                    <div class="col-md-6">
+                        <div class="dash-card">
+                            <div class="dash-card-header">
+                                <div class="dash-card-icon icon-overview">🤖</div>
+                                <h5 class="dash-card-title">BiLSTM Deep Learning</h5>
+                            </div>
+                            <p class="small text-secondary" style="line-height: 1.6;">
+                                <strong>Why we chose it:</strong> Symptoms are not isolated variables; they have temporal sequences and dependencies. A Bidirectional LSTM (BiLSTM) processes descriptions in both forward and backward contexts. This captures context such as "started with a fever, then a rash appeared", yielding highly contextual representation.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="dash-card">
+                            <div class="dash-card-header">
+                                <div class="dash-card-icon icon-comparison">📊</div>
+                                <h5 class="dash-card-title">TF-IDF + SVM Baseline</h5>
+                            </div>
+                            <p class="small text-secondary" style="line-height: 1.6;">
+                                <strong>Why we chose it:</strong> Standard Support Vector Machine (SVM) combined with TF-IDF vectorization serves as a robust statistical baseline. It evaluates the raw occurrences and term frequency of clinical keywords within the corpus, mapping decision boundaries in hyperplanes. This helps validate deep learning sequence representations.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <hr class="border-secondary border-opacity-25 my-4">
+
+            <!-- How It Works Section -->
+            <div>
+                <h3 class="fw-bold mb-4 text-center" style="color: var(--accent-purple);">How It Works</h3>
+                <div class="row g-4">
+                    <div class="col-md-4">
+                        <div class="text-center p-3">
+                            <div class="d-inline-flex align-items-center justify-content-center rounded-circle mb-3" style="width: 60px; height: 60px; background: var(--accent-cyan-glow); color: var(--accent-cyan); font-size: 1.5rem; font-weight: bold;">1</div>
+                            <h5 class="fw-bold">Describe Symptoms</h5>
+                            <p class="small text-muted">Input your symptoms in natural, conversational English on the diagnosis panel.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="text-center p-3">
+                            <div class="d-inline-flex align-items-center justify-content-center rounded-circle mb-3" style="width: 60px; height: 60px; background: var(--accent-emerald-glow); color: var(--accent-emerald); font-size: 1.5rem; font-weight: bold;">2</div>
+                            <h5 class="fw-bold">AI Clinical Analysis</h5>
+                            <p class="small text-muted">The BiLSTM deep learning model and TF-IDF SVM process inputs concurrently to produce diagnostic confidence scores.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="text-center p-3">
+                            <div class="d-inline-flex align-items-center justify-content-center rounded-circle mb-3" style="width: 60px; height: 60px; background: var(--accent-orange-glow); color: var(--accent-orange); font-size: 1.5rem; font-weight: bold;">3</div>
+                            <h5 class="fw-bold">Get Recommendations</h5>
+                            <p class="small text-muted">Receive a detailed wellness dashboard detailing precautions, exercises, diets, and suggestions.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Unified Footer -->
+    <footer class="clinic-footer text-center">
+        <div class="container">
+            <p class="mb-1">© 2026 Health Care Center - Personal Clinical AI Hub. All rights reserved.</p>
+            <p class="mb-0 text-muted" style="font-size: 0.8rem;">Disclaimer: This clinical prediction model is for informational and educational purposes only and does not constitute medical advice.</p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap 5 JavaScript Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm" crossorigin="anonymous"></script>
+
+    <!-- Theme Toggle Functionality Script -->
+    <script>
+        const themeToggleBtn = document.getElementById('themeToggle');
+        
+        function setTheme(theme) {
+            if (theme === 'light') {
+                document.documentElement.classList.add('light-theme');
+                if (themeToggleBtn) {
+                    themeToggleBtn.textContent = '☀️';
+                    themeToggleBtn.style.background = 'rgba(0,0,0,0.06)';
+                }
+            } else {
+                document.documentElement.classList.remove('light-theme');
+                if (themeToggleBtn) {
+                    themeToggleBtn.textContent = '🌙';
+                    themeToggleBtn.style.background = 'rgba(255,255,255,0.08)';
+                }
+            }
+            localStorage.setItem('theme', theme);
+        }
+        
+        // Initialise theme icons & values
+        const currentTheme = localStorage.getItem('theme') || 'dark';
+        setTheme(currentTheme);
+        
+        if (themeToggleBtn) {
+            themeToggleBtn.addEventListener('click', () => {
+                const activeTheme = localStorage.getItem('theme') || 'dark';
+                if (activeTheme === 'dark') {
+                    setTheme('light');
+                } else {
+                    setTheme('dark');
+                }
+            });
+        }
+    </script>
+</body>
+</html>
